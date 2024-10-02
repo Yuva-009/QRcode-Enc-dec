@@ -61,6 +61,22 @@
             justify-content: center;
             align-items: center;
         }
+        #copy {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 300px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        #copy:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
@@ -86,10 +102,28 @@
         </center>
 
         <div id="qrcode"></div>
+        <center><button id="copy">Copy Encrypted Text</button></center>
     </div>
+    
     <center><h4>Mini Project by Yuva Sakthi Bala .R</h4></center>
 
     <script type="text/javascript">
+        let cipher; // Declare cipher in a broader scope
+
+        document.getElementById('copy').addEventListener('click', function() {
+            if (cipher) { // Check if cipher is defined
+                navigator.clipboard.writeText(cipher)
+                    .then(() => {
+                        alert("Text copied to clipboard");
+                    })
+                    .catch(err => {
+                        console.error("Failed to copy: ", err);
+                    });
+            } else {
+                alert("No text to copy");
+            }
+        });
+
         function generateQRCode() {
             var mytext = document.getElementById("text").value;
             var size = document.getElementById("size").value;
@@ -101,10 +135,10 @@
             if (mytext !== "") {
                 // Encrypt the text using a secret key
                 var secretKey = "apple"; // Change this to a secure key
-                var encryptedText = CryptoJS.AES.encrypt(mytext, secretKey).toString();
+                cipher = CryptoJS.AES.encrypt(mytext, secretKey).toString(); // Store cipher
 
                 var qrcode = new QRCode(qrcodeContainer, {
-                    text: encryptedText,
+                    text: cipher, // Use encrypted text in QR code
                     width: parseInt(size),
                     height: parseInt(size),
                 });
