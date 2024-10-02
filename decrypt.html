@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decrypt QR Code</title>
+    <style>
+        /* Common Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e0e0e0;
+        }
+
+        .wrapper {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+        }
+
+        textarea {
+            width: 100%;
+            height: 60px;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            height: 60px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background-color: rgb(245, 112, 112);
+            color: white;
+            font-size: large;
+            transition: transform 0.2s;
+        }
+
+        input[type="submit"]:hover {
+            transform: scale(1.05);
+        }
+
+        h4 {
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="wrapper">
+            <center>
+                <textarea id="encryptedText" placeholder="Enter encrypted text here..."></textarea>
+                <br>
+                <input type="submit" value="DECRYPT" id="decryptButton" onclick="decryptText()">
+                <br><br>
+                <textarea id="decryptedText" placeholder="Decrypted text will appear here..." readonly></textarea>
+            </center>
+        </div>
+    </div>
+
+    <center><h4>Mini Project by Yuva Sakthi Bala .R</h4></center>
+
+    <script type="text/javascript">
+        function decryptText() {
+            var encryptedText = document.getElementById("encryptedText").value;
+            var secretkey = "apple";
+
+            var bytes = CryptoJS.AES.decrypt(encryptedText, secretkey);
+            var decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+
+            if (decryptedText) {
+                document.getElementById("decryptedText").value = decryptedText;
+            } else {
+                document.getElementById("decryptedText").value = "Decryption failed. Please check your input.";
+            }
+        }
+    </script>
+</body>
+</html>

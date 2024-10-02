@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        /* Common Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e0e0e0;
+        }
+
+        .wrapper {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+        }
+
+        .encrypt, .decrypt {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: large;
+            border: none;
+            border-radius: 10px;
+            width: 100%;
+            height: 60px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin: 10px 0;
+        }
+
+        .encrypt {
+            background-color: rgb(252, 242, 104);
+        }
+
+        .decrypt {
+            background-color: rgb(245, 112, 112);
+        }
+
+        .encrypt:hover, .decrypt:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Media Queries for Responsive Design */
+        @media (max-width: 600px) {
+            .wrapper {
+                padding: 10px;
+            }
+
+            .encrypt, .decrypt {
+                height: 50px;
+                font-size: medium;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="wrapper">
+            <h1>QR Code Generator & Decryptor</h1>
+            <button class="encrypt" onclick="window.location.href='encrypt.html'">Generate QR Code</button> <br>
+            <button class="decrypt" onclick="window.location.href='decrypt.html'">Decrypt</button>
+        </div>
+    </div>
+</body>
+</html>
