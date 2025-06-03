@@ -2,96 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decrypt QR Code</title>
+    <title>Scan and Decrypt QR Code</title>
     <style>
-        /* Common Styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #e0e0e0;
-        }
-
-        .wrapper {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 90%;
-            width: 400px;
-            text-align: center;
-        }
-
-        textarea {
-            width: 100%;
-            height: 60px;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
+        body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; }
+        .container { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #d9d9d9; }
+        .wrapper { background: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); padding: 20px; max-width: 90%; width: 400px; text-align: center; }
+        input[type="submit"], button { background-color: #dc3545; color: #fff; border: none; border-radius: 8px; padding: 10px; margin: 10px 0; cursor: pointer; width: 90%; }
+        textarea, input[type="password"], input[type="file"] {
             border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            width: 90%;
+            margin: 10px 0;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
         }
-
-        input[type="submit"] {
-            width: 100%;
-            height: 60px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            background-color: rgb(245, 112, 112);
-            color: white;
-            font-size: large;
-            transition: transform 0.2s;
-        }
-
-        input[type="submit"]:hover {
-            transform: scale(1.05);
-        }
-
-        h4 {
-            margin-top: 20px;
-        }
+        video, canvas { display: none; margin: 10px 0; border-radius: 8px; }
+        input[type="submit"]:hover, button:hover { opacity: 0.9; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+    <script src="https://cdn.rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="wrapper">
-            <center>
-                <textarea id="encryptedText" placeholder="Enter encrypted text here..."></textarea>
-                <br>
-                <input type="submit" value="DECRYPT" id="decryptButton" onclick="decryptText()">
-                <br><br>
-                <textarea id="decryptedText" placeholder="Decrypted text will appear here..." readonly></textarea>
-            </center>
+            <h2>Scan and Decrypt QR Code</h2>
+            
+            <!-- Upload QR Code Image -->
+            <input type="file" accept="image/*" onchange="handleFile(event)">
+            
+            <!-- Live Camera Feed -->
+            <video id="camera" width="300" height="300"></video>
+            <button onclick="startCamera()">Scan QR Code with Camera</button>
+
+            
+
+            
+            <!-- Decrypt Section -->
+            <textarea id="scannedText" placeholder="Scanned encrypted text will appear here..." readonly></textarea>
+
+            <!-- manualEncryptedText -->
+            <textarea id="manualEncryptedText" placeholder="Or manually enter encrypted text here..."></textarea>
+            
+            <input type="password" id="key" placeholder="Enter decryption key">
+            <input type="submit" value="DECRYPT" onclick="decryptText()">
+            <textarea id="decryptedText" placeholder="Decrypted text will appear here..." readonly></textarea>
         </div>
     </div>
+    <script>
+        let video = document.getElementById("camera");
+        let scannedText = "";
 
-    <center><h4>Mini Project by Yuva Sakthi Bala .R</h4></center>
+        // Handle QR code image upload
+        function handleFile(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function() {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    if (code) {
+                        document.getElementById("scannedText").value = code.data;
+                        scannedText = code.data;
+                    } else {
+                        alert("No QR code found in the image.");
+                    }
+                };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        }
 
-    <script type="text/javascript">
-        function decryptText() {
-            var encryptedText = document.getElementById("encryptedText").value;
-            var secretkey = "apple";
+        // Start camera to scan QR code
+        function startCamera() {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.style.display = "block";
+                    video.play();
+                    scanQRCode();
+                })
+                .catch(err => alert("Camera access denied: " + err.message));
+        }
 
-            var bytes = CryptoJS.AES.decrypt(encryptedText, secretkey);
-            var decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+        // Scan QR code from camera
+        function scanQRCode() {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
 
-            if (decryptedText) {
-                document.getElementById("decryptedText").value = decryptedText;
-            } else {
-                document.getElementById("decryptedText").value = "Decryption failed. Please check your input.";
+            const scan = () => {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    if (code) {
+                        document.getElementById("scannedText").value = code.data;
+                        scannedText = code.data;
+                        stopCamera();
+                    }
+                }
+                requestAnimationFrame(scan);
+            };
+            scan();
+        }
+
+        // Stop camera
+        function stopCamera() {
+            const stream = video.srcObject;
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+                video.style.display = "none";
             }
         }
+
+        // Decrypt scanned text
+        function decryptText() {
+    const secretKey = document.getElementById("key").value;
+    const manualInput = document.getElementById("manualEncryptedText").value.trim();
+    const textToDecrypt = manualInput || scannedText;
+
+    if (textToDecrypt && secretKey) {
+        try {
+            const bytes = CryptoJS.AES.decrypt(textToDecrypt, secretKey);
+            const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+            document.getElementById("decryptedText").value = decryptedText || "Decryption failed.";
+        } catch (error) {
+            document.getElementById("decryptedText").value = "Invalid encrypted text or key!";
+        }
+    } else {
+        alert("Please enter encrypted text and a key.");
+    }
+}
+
     </script>
 </body>
 </html>
