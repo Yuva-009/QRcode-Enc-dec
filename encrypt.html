@@ -2,148 +2,61 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h4 {
-            margin-top: 20px;
-            color: #555;
-        }
-
-        select, textarea, input[type="submit"] {
-            width: 300px;
-            padding: 10px;
-            margin: 10px 0;
+        body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; }
+        .container { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #d9d9d9; }
+        .wrapper { background: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); padding: 20px; max-width: 90%; width: 400px; text-align: center; }
+        input[type="submit"], button { background-color: #28a745; color: #fff; border: none; border-radius: 8px; padding: 10px; margin: 10px 0; cursor: pointer; width: 90%; }
+        textarea, input[type="password"] {
             border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        textarea {
-            resize: none;
-            height: 100px;
-        }
-
-        input[type="submit"] {
-            background-color: #28a745;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #218838;
-        }
-
-        #qrcode {
-            margin-top: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #copy {
-            background-color: #28a745;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            width: 300px;
+            border-radius: 8px;
             padding: 10px;
+            width: 90%;
             margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            margin-top: 10px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
         }
-        #copy:hover {
-            background-color: #218838;
-        }
+        button.copy-btn { background-color: #007bff; }
+        button:hover, input[type="submit"]:hover { opacity: 0.9; }
+        #qrcode { display: flex; justify-content: center; margin: 20px 0; }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script src="https://rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <center>
-            <select id="size"> 
-                <option value="100">100x100</option>
-                <option value="150">150x150</option>
-                <option value="200" selected>200x200</option>
-                <option value="250">250x250</option>
-                <option value="300">300x300</option>
-            </select>
-
-            <br>
-
+        <div class="wrapper">
             <textarea id="text" placeholder="Enter text here..."></textarea>
-
-            <br>
-
-            <input type="submit" value="GENERATE" id="submit" onclick="generateQRCode()">
-       
-            <br><br>
-        </center>
-
-        <div id="qrcode"></div>
-        <center><button id="copy">Copy Encrypted Text</button></center>
+            <input type="password" id="key" placeholder="Enter encryption key">
+            <input type="submit" value="GENERATE QR CODE" onclick="generateQRCode()">
+            <div id="qrcode"></div>
+            <button class="copy-btn" onclick="copyEncryptedText()">Copy Encrypted Text</button>
+        </div>
     </div>
-    
-    <center><h4>Mini Project by Yuva Sakthi Bala .R</h4></center>
-
-    <script type="text/javascript">
-        let cipher; // Declare cipher in a broader scope
-
-        document.getElementById('copy').addEventListener('click', function() {
-            if (cipher) { // Check if cipher is defined
-                navigator.clipboard.writeText(cipher)
-                    .then(() => {
-                        alert("Text copied to clipboard");
-                    })
-                    .catch(err => {
-                        console.error("Failed to copy: ", err);
-                    });
-            } else {
-                alert("No text to copy");
-            }
-        });
+    <script>
+        let encryptedText = "";
 
         function generateQRCode() {
-            var mytext = document.getElementById("text").value;
-            var size = document.getElementById("size").value;
-            var qrcodeContainer = document.getElementById("qrcode");
-            
-            // Clear previous QR code
+            const mytext = document.getElementById("text").value;
+            const secretKey = document.getElementById("key").value;
+            const qrcodeContainer = document.getElementById("qrcode");
             qrcodeContainer.innerHTML = "";
 
-            if (mytext !== "") {
-                // Encrypt the text using a secret key
-                var secretKey = "apple"; // Change this to a secure key
-                cipher = CryptoJS.AES.encrypt(mytext, secretKey).toString(); // Store cipher
-
-                var qrcode = new QRCode(qrcodeContainer, {
-                    text: cipher, // Use encrypted text in QR code
-                    width: parseInt(size),
-                    height: parseInt(size),
-                });
+            if (mytext && secretKey) {
+                encryptedText = CryptoJS.AES.encrypt(mytext, secretKey).toString();
+                new QRCode(qrcodeContainer, { text: encryptedText, width: 200, height: 200 });
             } else {
-                alert("Please Enter Text");
+                alert("Please enter text and a key.");
+            }
+        }
+
+        function copyEncryptedText() {
+            if (encryptedText) {
+                navigator.clipboard.writeText(encryptedText)
+                    .then(() => alert("Encrypted text copied to clipboard!"))
+                    .catch(err => console.error("Failed to copy text:", err));
+            } else {
+                alert("No encrypted text to copy!");
             }
         }
     </script>
