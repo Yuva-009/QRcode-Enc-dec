@@ -1,64 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>QR Code Generator</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; padding: 20px; }
-        .container { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #d9d9d9; }
-        .wrapper { background: #fff; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); padding: 20px; max-width: 90%; width: 400px; text-align: center; }
-        input[type="submit"], button { background-color: #28a745; color: #fff; border: none; border-radius: 8px; padding: 10px; margin: 10px 0; cursor: pointer; width: 90%; }
-        textarea, input[type="password"] {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            padding: 10px;
-            width: 90%;
-            margin: 10px 0;
-            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
-        }
-        button.copy-btn { background-color: #007bff; }
-        button:hover, input[type="submit"]:hover { opacity: 0.9; }
-        #qrcode { display: flex; justify-content: center; margin: 20px 0; }
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-    <script src="https://rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <meta charset="UTF-8" />
+  <title>QR Code Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #d9d9d9;
+    }
+
+    .wrapper {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      max-width: 90%;
+      width: 400px;
+      text-align: center;
+    }
+
+    textarea,
+    input[type="password"] {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      width: 90%;
+      margin: 10px 0;
+      box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .fancy-button {
+      position: relative;
+      display: inline-block;
+      font-weight: 600;
+      color: white;
+      background-color: #171717;
+      border-radius: 1rem;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.3s ease-in-out;
+      width: 90%;
+      margin-top: 15px;
+    }
+
+    .fancy-button:hover {
+      transform: scale(1.05);
+    }
+
+    .fancy-button:active {
+      transform: scale(0.95);
+    }
+
+    .fancy-button span.bg {
+      position: absolute;
+      inset: 0;
+      border-radius: 1rem;
+      padding: 2px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .fancy-button:hover span.bg {
+      opacity: 1;
+    }
+
+    .fancy-button span.content {
+      position: relative;
+      display: block;
+      background-color: #0a0a0a;
+      border-radius: 1rem;
+      padding: 1rem 2rem;
+      z-index: 10;
+    }
+
+    .fancy-button .inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: white;
+      transition: all 0.5s ease;
+    }
+
+    .fancy-button:hover .inner {
+      transform: translateX(6px);
+      color: #34d399;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+  <script src="https://rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="wrapper">
-            <textarea id="text" placeholder="Enter text here..."></textarea>
-            <input type="password" id="key" placeholder="Enter encryption key">
-            <input type="submit" value="GENERATE QR CODE" onclick="generateQRCode()">
-            <div id="qrcode"></div>
-            <button class="copy-btn" onclick="copyEncryptedText()">Copy Encrypted Text</button>
-        </div>
+  <div class="container">
+    <div class="wrapper">
+      <textarea id="text" placeholder="Enter text here..."></textarea>
+      <input type="password" id="key" placeholder="Enter encryption key">
+
+      <!-- Generate QR Code Button -->
+      <div class="fancy-button" onclick="generateQRCode()">
+        <span class="bg" style="background: linear-gradient(to right, #10b981, #06b6d4, #0ea5e9);"></span>
+        <span class="content">
+          <div class="inner">
+            <span>Generate QR Code</span>
+            <svg fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"></path>
+            </svg>
+          </div>
+        </span>
+      </div>
+
+      <div id="qrcode"></div>
+
+      <!-- Copy Encrypted Text Button -->
+      <div class="fancy-button" onclick="copyEncryptedText()">
+        <span class="bg" style="background: linear-gradient(to right, #f43f5e, #f97316, #facc15);"></span>
+        <span class="content">
+          <div class="inner">
+            <span>Copy Encrypted Text</span>
+            <svg fill="currentColor" viewBox="0 0 24 24">
+              <path d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"></path>
+            </svg>
+          </div>
+        </span>
+      </div>
     </div>
-    <script>
-        let encryptedText = "";
+  </div>
 
-        function generateQRCode() {
-            const mytext = document.getElementById("text").value;
-            const secretKey = document.getElementById("key").value;
-            const qrcodeContainer = document.getElementById("qrcode");
-            qrcodeContainer.innerHTML = "";
+  <script>
+    let encryptedText = "";
 
-            if (mytext && secretKey) {
-                encryptedText = CryptoJS.AES.encrypt(mytext, secretKey).toString();
-                new QRCode(qrcodeContainer, { text: encryptedText, width: 200, height: 200 });
-            } else {
-                alert("Please enter text and a key.");
-            }
-        }
+    function generateQRCode() {
+      const mytext = document.getElementById("text").value;
+      const secretKey = document.getElementById("key").value;
+      const qrcodeContainer = document.getElementById("qrcode");
+      qrcodeContainer.innerHTML = "";
 
-        function copyEncryptedText() {
-            if (encryptedText) {
-                navigator.clipboard.writeText(encryptedText)
-                    .then(() => alert("Encrypted text copied to clipboard!"))
-                    .catch(err => console.error("Failed to copy text:", err));
-            } else {
-                alert("No encrypted text to copy!");
-            }
-        }
-    </script>
+      if (mytext && secretKey) {
+        encryptedText = CryptoJS.AES.encrypt(mytext, secretKey).toString();
+        new QRCode(qrcodeContainer, {
+          text: encryptedText,
+          width: 200,
+          height: 200
+        });
+      } else {
+        alert("Please enter text and a key.");
+      }
+    }
+
+    function copyEncryptedText() {
+      if (encryptedText) {
+        navigator.clipboard.writeText(encryptedText)
+          .then(() => alert("Encrypted text copied to clipboard!"))
+          .catch(err => console.error("Failed to copy text:", err));
+      } else {
+        alert("No encrypted text to copy!");
+      }
+    }
+  </script>
 </body>
 </html>
