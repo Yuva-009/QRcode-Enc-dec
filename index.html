@@ -1,89 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <style>
-        /* Common Styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Home</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
 
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #e0e0e0;
-        }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #e0e0e0;
+    }
 
-        .wrapper {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            max-width: 90%;
-            width: 400px;
-            text-align: center;
-        }
+    .wrapper {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 30px 20px;
+      width: 400px;
+      max-width: 90%;
+      text-align: center;
+    }
 
-        .encrypt, .decrypt {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: large;
-            border: none;
-            border-radius: 10px;
-            width: 100%;
-            height: 60px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            margin: 10px 0;
-        }
+    h1 {
+      margin-bottom: 40px;
+      color: #333;
+    }
 
-        .encrypt {
-            background-color: rgb(252, 242, 104);
-        }
+    .fancy-button-wrapper {
+      margin-bottom: 20px;
+    }
 
-        .decrypt {
-            background-color: rgb(245, 112, 112);
-        }
+    .fancy-button {
+      position: relative;
+      display: inline-block;
+      font-weight: 600;
+      color: white;
+      background-color: #171717;
+      border-radius: 1rem;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform 0.3s ease-in-out;
+    }
 
-        .encrypt:hover, .decrypt:hover {
-            transform: scale(1.05);
-        }
+    .fancy-button:hover {
+      transform: scale(1.05);
+    }
 
-        h1 {
-            margin-bottom: 20px;
-            color: #333;
-        }
+    .fancy-button:active {
+      transform: scale(0.95);
+    }
 
-        /* Media Queries for Responsive Design */
-        @media (max-width: 600px) {
-            .wrapper {
-                padding: 10px;
-            }
+    .fancy-button span.bg {
+      position: absolute;
+      inset: 0;
+      border-radius: 1rem;
+      padding: 2px;
+      opacity: 0;
+      background: linear-gradient(to right, #10b981, #06b6d4, #0ea5e9);
+      transition: opacity 0.5s ease;
+    }
 
-            .encrypt, .decrypt {
-                height: 50px;
-                font-size: medium;
-            }
+    .fancy-button:hover span.bg {
+      opacity: 1;
+    }
 
-            h1 {
-                font-size: 24px;
-            }
-        }
-    </style>
+    .fancy-button span.content {
+      position: relative;
+      display: block;
+      background-color: #0a0a0a;
+      border-radius: 1rem;
+      padding: 1rem 2rem;
+      z-index: 10;
+    }
+
+    .fancy-button .inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: white;
+      transition: all 0.5s ease;
+    }
+
+    .fancy-button:hover .inner {
+      transform: translateX(6px);
+      color: #34d399;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .wrapper {
+        padding: 20px 10px;
+      }
+
+      .fancy-button .content {
+        padding: 0.75rem 1.5rem;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="wrapper">
-            <h1>QR Code Generator & Decryptor</h1>
-            <button class="encrypt" onclick="window.location.href='encrypt.html'">Generate QR Code</button> <br>
-            <button class="decrypt" onclick="window.location.href='decrypt.html'">Decrypt</button>
+  <div class="container">
+    <div class="wrapper">
+      <h1>QR Code Generator & Decryptor</h1>
+
+      <!-- Generate QR Code Button -->
+      <div class="fancy-button-wrapper">
+        <div class="fancy-button" onclick="window.location.href='encrypt.html'">
+          <span class="bg"></span>
+          <span class="content">
+            <div class="inner">
+              <span>Generate QR Code</span>
+              <svg fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"></path>
+              </svg>
+            </div>
+          </span>
         </div>
+      </div>
+
+      <!-- Decrypt Button -->
+      <div class="fancy-button-wrapper">
+        <div class="fancy-button" onclick="window.location.href='decrypt.html'">
+          <span class="bg" style="background: linear-gradient(to right, #f43f5e, #f97316, #facc15);"></span>
+          <span class="content">
+            <div class="inner">
+              <span>Decrypt</span>
+              <svg fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"></path>
+              </svg>
+            </div>
+          </span>
+        </div>
+      </div>
     </div>
+  </div>
 </body>
 </html>
